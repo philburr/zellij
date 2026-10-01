@@ -526,6 +526,7 @@ enum ActionName {
     SetPaneBorderStyle = 116;
     NextSession = 117;
     PrevSession = 118;
+    NewSession = 119;
 }
 
 message Position {

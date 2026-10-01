@@ -739,6 +739,8 @@ pub enum Action {
     NextSession,
     /// Switch to the previous session in the session list (wrapping to the last session if at the beginning)
     PrevSession,
+    /// Create a new session and switch to it
+    NewSession,
 }
 
 impl Default for Action {

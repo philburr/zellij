@@ -323,6 +323,7 @@ message Action {
     ApplyFloatingSwapLayoutByTabIdAction apply_floating_swap_layout_by_tab_id = 155;
     NextSessionAction next_session = 156;
     PrevSessionAction prev_session = 157;
+    NewSessionAction new_session = 158;
   }
 }
 
@@ -438,6 +439,7 @@ message TogglePaneInGroupAction {}
 message ToggleGroupMarkingAction {}
 message NextSessionAction {}
 message PrevSessionAction {}
+message NewSessionAction {}
 
 // Complex action types (with data)
 message WriteAction {

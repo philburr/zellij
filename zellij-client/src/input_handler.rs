@@ -460,6 +460,14 @@ impl InputHandler {
                     is_cli_client: false,
                 });
             },
+            Action::NewSession => {
+                self.os_input.send_to_server(ClientToServerMsg::Action {
+                    action,
+                    terminal_id: None,
+                    client_id,
+                    is_cli_client: false,
+                });
+            },
             Action::CloseFocus
             | Action::SwitchToMode { .. }
             | Action::ClearScreen

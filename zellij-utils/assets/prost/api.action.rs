@@ -1178,6 +1178,7 @@ pub enum ActionName {
     SetPaneBorderStyle = 116,
     NextSession = 117,
     PrevSession = 118,
+    NewSession = 119,
 }
 impl ActionName {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -1302,6 +1303,7 @@ impl ActionName {
             ActionName::SetPaneBorderStyle => "SetPaneBorderStyle",
             ActionName::NextSession => "NextSession",
             ActionName::PrevSession => "PrevSession",
+            ActionName::NewSession => "NewSession",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -1423,6 +1425,7 @@ impl ActionName {
             "SetPaneBorderStyle" => Some(Self::SetPaneBorderStyle),
             "NextSession" => Some(Self::NextSession),
             "PrevSession" => Some(Self::PrevSession),
+            "NewSession" => Some(Self::NewSession),
             _ => None,
         }
     }

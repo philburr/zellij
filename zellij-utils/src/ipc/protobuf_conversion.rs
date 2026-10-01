@@ -1250,6 +1250,7 @@ impl From<crate::input::actions::Action>
             NewTabAction,
             NewTiledPaneAction,
             NewTiledPluginPaneAction,
+            NewSessionAction,
             NextSessionAction,
             NextSwapLayoutAction,
             NextSwapLayoutByTabIdAction,
@@ -2277,6 +2278,9 @@ impl From<crate::input::actions::Action>
             crate::input::actions::Action::PrevSession => {
                 ActionType::PrevSession(PrevSessionAction {})
             },
+            crate::input::actions::Action::NewSession => {
+                ActionType::NewSession(NewSessionAction {})
+            },
         };
 
         Self {
@@ -3288,6 +3292,7 @@ impl TryFrom<crate::client_server_contract::client_server_contract::Action>
             },
             ActionType::NextSession(_) => Ok(crate::input::actions::Action::NextSession),
             ActionType::PrevSession(_) => Ok(crate::input::actions::Action::PrevSession),
+            ActionType::NewSession(_) => Ok(crate::input::actions::Action::NewSession),
         }
     }
 }

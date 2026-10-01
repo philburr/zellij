@@ -1311,6 +1311,25 @@ pub(crate) fn route_action(
                 drop(completion_tx); // no sessions available, this is a no-op
             }
         },
+        Action::NewSession => {
+            wait_for_completion = false;
+            drop(completion_tx);
+            let connect_to_session = ConnectToSession {
+                name: None,
+                tab_position: None,
+                pane_id: None,
+                layout: None,
+                cwd: None,
+            };
+            senders
+                .send_to_server(ServerInstruction::SwitchSession(
+                    connect_to_session,
+                    client_id,
+                    None,
+                ))
+                .with_context(err_context)?;
+            should_break = true;
+        },
         Action::MouseEvent { event } => {
             senders
                 .send_to_screen(ScreenInstruction::MouseEvent(

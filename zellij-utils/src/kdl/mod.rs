@@ -97,6 +97,7 @@ macro_rules! parse_kdl_action_arguments {
                 "NextSwapLayout" => Ok(Action::NextSwapLayout),
                 "NextSession" => Ok(Action::NextSession),
                 "PrevSession" => Ok(Action::PrevSession),
+                "NewSession" => Ok(Action::NewSession),
                 "Clear" => Ok(Action::ClearScreen),
                 _ => Err(ConfigError::new_kdl_error(
                     format!("Unsupported action: {:?}", $action_name),
@@ -1300,6 +1301,7 @@ impl Action {
             },
             Action::NextSession => Some(KdlNode::new("NextSession")),
             Action::PrevSession => Some(KdlNode::new("PrevSession")),
+            Action::NewSession => Some(KdlNode::new("NewSession")),
             Action::BreakPane => Some(KdlNode::new("BreakPane")),
             Action::BreakPaneRight => Some(KdlNode::new("BreakPaneRight")),
             Action::BreakPaneLeft => Some(KdlNode::new("BreakPaneLeft")),
@@ -1677,6 +1679,9 @@ impl TryFrom<(&KdlNode, &Options)> for Action {
                 parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
             },
             "PrevSession" => {
+                parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
+            },
+            "NewSession" => {
                 parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
             },
             "Detach" => parse_kdl_action_arguments!(action_name, action_arguments, kdl_action),

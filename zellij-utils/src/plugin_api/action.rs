@@ -2102,6 +2102,7 @@ impl TryFrom<Action> for ProtobufAction {
             | Action::SwitchSession { .. }
             | Action::NextSession
             | Action::PrevSession
+            | Action::NewSession
             | Action::SaveSession
             | Action::ListTabs { .. }
             | Action::CurrentTabInfo { .. }
