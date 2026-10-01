@@ -95,6 +95,8 @@ macro_rules! parse_kdl_action_arguments {
                 "ToggleMouseMode" => Ok(Action::ToggleMouseMode),
                 "PreviousSwapLayout" => Ok(Action::PreviousSwapLayout),
                 "NextSwapLayout" => Ok(Action::NextSwapLayout),
+                "NextSession" => Ok(Action::NextSession),
+                "PrevSession" => Ok(Action::PrevSession),
                 "Clear" => Ok(Action::ClearScreen),
                 _ => Err(ConfigError::new_kdl_error(
                     format!("Unsupported action: {:?}", $action_name),
@@ -1296,6 +1298,8 @@ impl Action {
                 node.push(name.clone());
                 Some(node)
             },
+            Action::NextSession => Some(KdlNode::new("NextSession")),
+            Action::PrevSession => Some(KdlNode::new("PrevSession")),
             Action::BreakPane => Some(KdlNode::new("BreakPane")),
             Action::BreakPaneRight => Some(KdlNode::new("BreakPaneRight")),
             Action::BreakPaneLeft => Some(KdlNode::new("BreakPaneLeft")),
@@ -1667,6 +1671,12 @@ impl TryFrom<(&KdlNode, &Options)> for Action {
                 parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
             },
             "ToggleMouseMode" => {
+                parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
+            },
+            "NextSession" => {
+                parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
+            },
+            "PrevSession" => {
                 parse_kdl_action_arguments!(action_name, action_arguments, kdl_action)
             },
             "Detach" => parse_kdl_action_arguments!(action_name, action_arguments, kdl_action),

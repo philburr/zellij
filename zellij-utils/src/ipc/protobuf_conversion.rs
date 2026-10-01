@@ -1250,6 +1250,7 @@ impl From<crate::input::actions::Action>
             NewTabAction,
             NewTiledPaneAction,
             NewTiledPluginPaneAction,
+            NextSessionAction,
             NextSwapLayoutAction,
             NextSwapLayoutByTabIdAction,
             NoOpAction,
@@ -1263,6 +1264,7 @@ impl From<crate::input::actions::Action>
             PasteAction,
             PreviousSwapLayoutAction,
             PreviousSwapLayoutByTabIdAction,
+            PrevSessionAction,
             QueryTabNamesAction,
             QuitAction,
             RenamePaneByPaneIdAction,
@@ -2268,6 +2270,12 @@ impl From<crate::input::actions::Action>
                     id,
                     direction: direction_to_proto_i32(direction),
                 })
+            },
+            crate::input::actions::Action::NextSession => {
+                ActionType::NextSession(NextSessionAction {})
+            },
+            crate::input::actions::Action::PrevSession => {
+                ActionType::PrevSession(PrevSessionAction {})
             },
         };
 
@@ -3278,6 +3286,8 @@ impl TryFrom<crate::client_server_contract::client_server_contract::Action>
                     direction,
                 })
             },
+            ActionType::NextSession(_) => Ok(crate::input::actions::Action::NextSession),
+            ActionType::PrevSession(_) => Ok(crate::input::actions::Action::PrevSession),
         }
     }
 }

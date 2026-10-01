@@ -1176,6 +1176,8 @@ pub enum ActionName {
     ApplyTiledSwapLayout = 114,
     ApplyFloatingSwapLayout = 115,
     SetPaneBorderStyle = 116,
+    NextSession = 117,
+    PrevSession = 118,
 }
 impl ActionName {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -1298,6 +1300,8 @@ impl ActionName {
             ActionName::ApplyTiledSwapLayout => "ApplyTiledSwapLayout",
             ActionName::ApplyFloatingSwapLayout => "ApplyFloatingSwapLayout",
             ActionName::SetPaneBorderStyle => "SetPaneBorderStyle",
+            ActionName::NextSession => "NextSession",
+            ActionName::PrevSession => "PrevSession",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -1417,6 +1421,8 @@ impl ActionName {
             "ApplyTiledSwapLayout" => Some(Self::ApplyTiledSwapLayout),
             "ApplyFloatingSwapLayout" => Some(Self::ApplyFloatingSwapLayout),
             "SetPaneBorderStyle" => Some(Self::SetPaneBorderStyle),
+            "NextSession" => Some(Self::NextSession),
+            "PrevSession" => Some(Self::PrevSession),
             _ => None,
         }
     }

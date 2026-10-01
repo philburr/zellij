@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, HashSet, VecDeque};
+use std::fs;
 use std::sync::{Arc, RwLock};
 use tokio::sync::oneshot;
 
@@ -17,6 +18,7 @@ use std::time::Duration;
 use uuid::Uuid;
 use zellij_utils::{
     channels::SenderWithContext,
+    consts::{is_ipc_socket, ZELLIJ_SOCK_DIR},
     data::{
         BareKey, ConnectToSession, Direction, Event, InputMode, KeyModifier, ListPanesResponse,
         ListTabsResponse, NewPanePlacement, PaneListEntry, ResizeStrategy, TabInfo,
@@ -36,6 +38,8 @@ use zellij_utils::{
 use crate::ClientId;
 
 const ACTION_COMPLETION_TIMEOUT: Duration = Duration::from_secs(1);
+
+
 
 #[derive(Debug, Clone)]
 pub struct ActionCompletionResult {
@@ -252,6 +256,7 @@ pub(crate) fn route_action(
     let (completion_tx, completion_rx) = oneshot::channel();
 
     let mut wait_forever = false;
+    let mut wait_for_completion = true;
 
     match action {
         Action::ToggleTab => {
@@ -1239,6 +1244,8 @@ pub(crate) fn route_action(
         } => {
             let current_session_name = envs::get_session_name().unwrap_or_else(|_| String::new());
             if name != current_session_name {
+                wait_for_completion = false;
+                drop(completion_tx);
                 let connect_to_session = ConnectToSession {
                     name: Some(name.clone()),
                     tab_position: tab_position.clone(),
@@ -1250,12 +1257,58 @@ pub(crate) fn route_action(
                     .send_to_server(ServerInstruction::SwitchSession(
                         connect_to_session,
                         client_id,
-                        Some(NotificationEnd::new(completion_tx)),
+                        None,
                     ))
                     .with_context(err_context)?;
                 should_break = true;
             } else {
                 drop(completion_tx); // no need to wait, this is a no-op
+            }
+        },
+        Action::NextSession => {
+            if let Some(next_session_name) = get_next_session() {
+                wait_for_completion = false;
+                drop(completion_tx);
+                let connect_to_session = ConnectToSession {
+                    name: Some(next_session_name),
+                    tab_position: None,
+                    pane_id: None,
+                    layout: None,
+                    cwd: None,
+                };
+                senders
+                    .send_to_server(ServerInstruction::SwitchSession(
+                        connect_to_session,
+                        client_id,
+                        None,
+                    ))
+                    .with_context(err_context)?;
+                should_break = true;
+            } else {
+                drop(completion_tx); // no sessions available, this is a no-op
+            }
+        },
+        Action::PrevSession => {
+            if let Some(prev_session_name) = get_prev_session() {
+                wait_for_completion = false;
+                drop(completion_tx);
+                let connect_to_session = ConnectToSession {
+                    name: Some(prev_session_name),
+                    tab_position: None,
+                    pane_id: None,
+                    layout: None,
+                    cwd: None,
+                };
+                senders
+                    .send_to_server(ServerInstruction::SwitchSession(
+                        connect_to_session,
+                        client_id,
+                        None,
+                    ))
+                    .with_context(err_context)?;
+                should_break = true;
+            } else {
+                drop(completion_tx); // no sessions available, this is a no-op
             }
         },
         Action::MouseEvent { event } => {
@@ -2233,7 +2286,17 @@ pub(crate) fn route_action(
                 .with_context(err_context)?;
         },
     }
-    let result = wait_for_action_completion(completion_rx, &action_name, wait_forever);
+    let result = if wait_for_completion {
+        wait_for_action_completion(completion_rx, &action_name, wait_forever)
+    } else {
+        ActionCompletionResult {
+            exit_status: None,
+            affected_pane_id: None,
+            affected_tab_id: None,
+            error_message: None,
+            stdout_message: None,
+        }
+    };
     if let Some(error_message) = &result.error_message {
         if let Some(cli_client_id) = cli_client_id {
             if let Some(ref os_input) = os_input {
@@ -3587,4 +3650,54 @@ mod tests {
         // But channel should be None (as per the Clone implementation comment)
         assert!(cloned.channel.is_none());
     }
+}
+
+fn get_next_session() -> Option<String> {
+    let current_session_name = envs::get_session_name().ok()?;
+    let sessions = get_session_names();
+
+    if sessions.len() < 2 {
+        return None;
+    }
+
+    let current_index = sessions.iter().position(|name| name == &current_session_name)?;
+
+    let next_index = (current_index + 1) % sessions.len();
+    Some(sessions[next_index].clone())
+}
+
+fn get_prev_session() -> Option<String> {
+    let current_session_name = envs::get_session_name().ok()?;
+    let sessions = get_session_names();
+
+    if sessions.len() < 2 {
+        return None;
+    }
+
+    let current_index = sessions.iter().position(|name| name == &current_session_name)?;
+
+    let prev_index = if current_index == 0 {
+        sessions.len() - 1
+    } else {
+        current_index - 1
+    };
+    Some(sessions[prev_index].clone())
+}
+
+fn get_session_names() -> Vec<String> {
+    let mut sessions = vec![];
+    if let Ok(files) = fs::read_dir(&*ZELLIJ_SOCK_DIR) {
+        for file in files.flatten() {
+            if let Ok(file_name) = file.file_name().into_string() {
+                if let Ok(file_type) = file.file_type() {
+                    if is_ipc_socket(&file_type) {
+                        sessions.push(file_name);
+                    }
+                }
+            }
+        }
+    }
+    // Keep cycling deterministic across platforms/filesystems.
+    sessions.sort();
+    sessions
 }

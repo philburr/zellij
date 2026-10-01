@@ -321,6 +321,8 @@ message Action {
     ApplyFloatingSwapLayoutAction apply_floating_swap_layout = 153;
     ApplyTiledSwapLayoutByTabIdAction apply_tiled_swap_layout_by_tab_id = 154;
     ApplyFloatingSwapLayoutByTabIdAction apply_floating_swap_layout_by_tab_id = 155;
+    NextSessionAction next_session = 156;
+    PrevSessionAction prev_session = 157;
   }
 }
 
@@ -434,6 +436,8 @@ message CurrentTabInfoAction {
 message TogglePanePinnedAction {}
 message TogglePaneInGroupAction {}
 message ToggleGroupMarkingAction {}
+message NextSessionAction {}
+message PrevSessionAction {}
 
 // Complex action types (with data)
 message WriteAction {

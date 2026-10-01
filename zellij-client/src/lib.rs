@@ -29,6 +29,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::{Arc, Mutex};
 use std::thread;
+
 use zellij_utils::errors::FatalError;
 use zellij_utils::shared::web_server_base_url;
 
@@ -119,6 +120,8 @@ pub enum RemoteClientError {
     IoError(std::io::Error),
     Other(Box<dyn std::error::Error + Send + Sync>),
 }
+
+
 
 impl std::fmt::Display for RemoteClientError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

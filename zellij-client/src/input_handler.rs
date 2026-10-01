@@ -4,6 +4,7 @@ use crate::{
     stdin_ansi_parser::AnsiStdinInstruction, ClientId, ClientInstruction, CommandIsExecuting,
     InputInstruction,
 };
+
 use zellij_utils::{
     channels::{Receiver, SenderWithContext, OPENCALLS},
     data::{InputMode, KeyWithModifier},
@@ -22,6 +23,8 @@ use zellij_utils::{
         InputEvent, Modifiers, MouseButtons, MouseEvent as TermwizMouseEvent,
     },
 };
+
+
 
 /// Handles the dispatching of [`Action`]s according to the current
 /// [`InputMode`], and keep tracks of the current [`InputMode`].
@@ -440,6 +443,22 @@ impl InputHandler {
                 });
                 self.exit(ExitReason::NormalDetached);
                 should_break = true;
+            },
+            Action::NextSession => {
+                self.os_input.send_to_server(ClientToServerMsg::Action {
+                    action,
+                    terminal_id: None,
+                    client_id,
+                    is_cli_client: false,
+                });
+            },
+            Action::PrevSession => {
+                self.os_input.send_to_server(ClientToServerMsg::Action {
+                    action,
+                    terminal_id: None,
+                    client_id,
+                    is_cli_client: false,
+                });
             },
             Action::CloseFocus
             | Action::SwitchToMode { .. }

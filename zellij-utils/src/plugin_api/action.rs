@@ -2100,6 +2100,8 @@ impl TryFrom<Action> for ProtobufAction {
             | Action::SetPaneBorderStyle { .. }
             | Action::SkipConfirm { action: _ }
             | Action::SwitchSession { .. }
+            | Action::NextSession
+            | Action::PrevSession
             | Action::SaveSession
             | Action::ListTabs { .. }
             | Action::CurrentTabInfo { .. }

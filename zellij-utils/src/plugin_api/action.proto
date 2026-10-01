@@ -524,6 +524,8 @@ enum ActionName {
     ApplyTiledSwapLayout = 114;
     ApplyFloatingSwapLayout = 115;
     SetPaneBorderStyle = 116;
+    NextSession = 117;
+    PrevSession = 118;
 }
 
 message Position {

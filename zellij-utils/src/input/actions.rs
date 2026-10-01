@@ -735,6 +735,10 @@ pub enum Action {
         id: u64,
         direction: Direction,
     },
+    /// Switch to the next session in the session list (wrapping to the first session if at the end)
+    NextSession,
+    /// Switch to the previous session in the session list (wrapping to the last session if at the beginning)
+    PrevSession,
 }
 
 impl Default for Action {
